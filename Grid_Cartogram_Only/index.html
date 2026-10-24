@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SF / On Location</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/d3.min.js" defer></script>
+    <script src="cartogram.js" defer></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="./index.html">SF <span>/</span> ON LOCATION</a
+        ><span class="edition">A CINEMATIC ATLAS · 01</span>
+      </header>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">THE CITY, THROUGH THE CAMERA</p>
+          <h1>Every district.<br />A different story.</h1>
+          <p class="deck">
+            Explore the geography of film and television in San Francisco.<br />Eleven
+            equal tiles. Thousands of location records.
+          </p>
+        </div>
+        <div class="intro-note">
+          <span class="big-arrow">↙</span>
+          <p>
+            Filter the archive.<br />Choose a district.<br />Discover what was
+            filmed there.
+          </p>
+        </div>
+      </section>
+      <section class="controls" aria-label="Archive filters">
+        <label
+          >RELEASE YEAR<select id="year" disabled>
+            <option value="all">All years</option>
+          </select></label
+        ><label class="search-label"
+          >SEARCH THE ARCHIVE<input
+            id="search"
+            type="search"
+            placeholder="Film title or location…"
+            disabled /></label
+        ><button id="reset" disabled>Reset filters ↺</button>
+      </section>
+      <p id="status" role="status">Loading the local archive…</p>
+      <section class="stats">
+        <div><strong id="records">—</strong><span>MAPPED RECORDS</span></div>
+        <div>
+          <strong id="productions">—</strong><span>FILM & TV TITLES</span>
+        </div>
+        <div>
+          <strong id="active">—</strong><span>DISTRICTS WITH RECORDS</span>
+        </div>
+        <p id="excluded"></p>
+      </section>
+      <div class="visuals">
+        <section class="map-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 / SPATIAL VIEW</p>
+              <h2>The district grid</h2>
+            </div>
+            <span class="tag">CLICK A TILE TO EXPLORE</span>
+          </div>
+          <svg
+            id="chart"
+            viewBox="0 0 600 510"
+            aria-label="Schematic district tile cartogram"
+          ></svg>
+          <div id="legend"></div>
+          <p class="note">
+            Equal-area tiles; schematic placement, not district boundaries.
+            Color shows location records on a fixed, square-root scale across
+            all filters. Gray = zero.
+          </p>
+        </section>
+      </div>
+      <section class="archive">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 / THE ARCHIVE</p>
+            <h2 id="detail-title">All districts</h2>
+            <p id="detail-description"></p>
+          </div>
+          <button id="clear" hidden>Clear district ×</button>
+        </div>
+        <div id="film-list"></div>
+        <button id="more" hidden>Load more records ↓</button>
+      </section>
+      <footer>
+        <p>
+          Source: Film Locations in San Francisco · CSV snapshot supplied by
+          you.
+        </p>
+        <p>
+          One row = one location record. Titles are deduplicated by title +
+          release year.<br />Records without a valid district are excluded from
+          the views. Years refer to release, not filming.
+        </p>
+      </footer>
+    </main>
+    <div id="tooltip" hidden></div>
+  </body>
+</html>

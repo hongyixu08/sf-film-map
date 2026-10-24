@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Walkthrough / SF On Location</title>
+    <!-- CSS Link -->
+    <link rel="stylesheet" href="styles.css" />
+    <!-- Prism.js Syntax Highlighting CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.css" rel="stylesheet" />
+    <script src="vendor/d3.min.js" defer></script>
+    
+    <style>
+      main {
+        max-width: 880px;
+        margin: 0 auto;
+        padding: 2rem 1.5rem;
+      }
+      .walkthrough-section {
+        margin-top: 3.5rem;
+        padding-top: 2rem;
+        border-top: 1px solid var(--border-color, #e5e7eb);
+      }
+      .code-comparison {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 1.2rem;
+        margin: 1.2rem 0;
+      }
+      
+      /* Code Block & Line Highlight Styles */
+      .code-block {
+        background: #1d242a;
+        padding: 1rem 1.25rem;
+        border-radius: 6px;
+        overflow-x: auto;
+        overflow-y: auto;
+        max-height: 260px;
+        font-family: monospace;
+        font-size: 0.85rem;
+        color: #e5e7eb;
+        margin: 0.5rem 0;
+        position: relative;
+      }
+      .code-block pre {
+        margin: 0;
+        padding: 0;
+      }
+      .code-label {
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+      }
+      .practice-card {
+        background: #f9fafb;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2.5rem;
+      }
+      .practice-card h3 {
+        margin-top: 0;
+        font-size: 1.2rem;
+      }
+      
+      /* Scrollable Stage Box */
+      .stage-box {
+        background: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin: 1.5rem 0;
+        max-height: 540px;
+        overflow-y: auto;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+      }
+      .map-panel svg {
+        width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      .step-item {
+        margin-bottom: 2rem;
+      }
+      .step-item h3 {
+        font-size: 1.05rem;
+        color: #111827;
+        margin-bottom: 0.5rem;
+      }
+      
+      .data-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1rem;
+        margin: 1.2rem 0;
+      }
+      .stat-card {
+        background: #f3f4f6;
+        padding: 1rem;
+        border-radius: 6px;
+        border-left: 4px solid #163d37;
+      }
+      .stat-card strong {
+        display: block;
+        font-size: 1.5rem;
+        color: #111827;
+        font-weight: 700;
+      }
+      .stat-card span {
+        font-size: 0.75rem;
+        color: #6b7280;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .data-details-list {
+        padding-left: 1.2rem;
+        line-height: 1.8;
+        color: #374151;
+        font-size: 0.9rem;
+      }
+
+      .data-table-wrapper {
+        overflow-x: auto;
+        margin: 1rem 0;
+        border: 1px solid #e5e7eb;
+        border-radius: 6px;
+      }
+      .data-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.85rem;
+        text-align: left;
+      }
+      .data-table th {
+        background: #f9fafb;
+        color: #374151;
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #e5e7eb;
+        font-weight: 600;
+      }
+      .data-table td {
+        padding: 0.6rem 0.8rem;
+        border-bottom: 1px solid #f3f4f6;
+        color: #4b5563;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <!-- Header -->
+      <header>
+        <a class="brand" href="./index.html">SF <span>/</span> ON LOCATION</a>
+        <span class="edition">WALKTHROUGH & DOCUMENTATION</span>
+      </header>
+
+      <!-- Intro -->
+      <section class="intro">
+        <div>
+          <p class="eyebrow">DEVELOPMENT WALKTHROUGH</p>
+          <h1>Building the Non-contiguous Grid Cartogram</h1>
+          <p class="deck">
+            A step-by-step technical guide exploring data parsing, spatial cartogram rendering, and interactive visual designs.
+          </p>
+        </div>
+      </section>
+
+      <!-- 00 / Top Demo Area -->
+      <section class="walkthrough-section" style="margin-top: 2rem; border-top: none; padding-top: 0;">
+        <p class="eyebrow">LIVE DEMO / BASELINE CARTOGRAM</p>
+        <h2>Grid Cartogram</h2>
+        <div class="stage-box" id="box-top">
+          <div class="map-panel">
+            <svg id="chart-top" viewBox="0 0 600 510" aria-label="District tile cartogram"></svg>
+            <div id="legend-top"></div>
+          </div>
+          <div class="archive" style="margin-top: 2rem; padding-top: 1rem; border-top: 1px dashed #e5e7eb;">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">CLICK A TILE TO EXPLORE RECORDS</p>
+                <h3 id="detail-title-top" style="margin: 0.2rem 0;">All districts</h3>
+                <p id="detail-description-top" style="font-size: 0.85rem; color: #6b7280;"></p>
+              </div>
+              <button id="clear-top" hidden style="background:#e5e7eb; border:none; padding: 0.4rem 0.8rem; border-radius:4px; cursor:pointer;">Clear district ×</button>
+            </div>
+            <div id="film-list-top" class="film-grid"></div>
+            <button id="more-top" hidden style="margin-top: 1rem; width: 100%; padding: 0.6rem; border: 1px solid #ccc; background:#fff; cursor:pointer;">Load more records ↓</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 01 / Data Foundation -->
+      <section class="walkthrough-section" id="sec-data">
+        <p class="eyebrow">01 / DATA FOUNDATION</p>
+        <h2>Dataset & Processing Details</h2>
+        <p>
+          This project uses the San Francisco film location dataset from DataSF (Film Locations in San Francisco).
+        </p>
+
+        <!-- 1. Key Stat Cards -->
+        <div class="data-stats-grid">
+          <div class="stat-card">
+            <strong>~3,000+</strong>
+            <span>Total Location Records</span>
+          </div>
+          <div class="stat-card">
+            <strong>400+</strong>
+            <span>Unique Film Titles</span>
+          </div>
+          <div class="stat-card">
+            <strong>11</strong>
+            <span>City Districts</span>
+          </div>
+        </div>
+
+        <!-- 2. Data Pipeline Details -->
+        <p class="code-label" style="margin-top: 1.5rem;">Data Pipeline Details</p>
+        <ul class="data-details-list">
+          <li><strong>Data Cleaning:</strong> Extract the <code>Release Year</code>, trim extra spaces, and convert <code>Supervisor District</code> into clean string IDs (e.g., `"1"` to `"11"`).</li>
+          <li><strong>Data Filtering:</strong> Keep only valid records that belong to San Francisco's 11 supervisor districts. Invalid entries are excluded.</li>
+          <li><strong>Data Aggregation (Rollup):</strong>
+            <br />- <strong>Record Count:</strong> Use <code>d3.rollup</code> grouped by <code>district</code> to count total filming locations.
+            <br />- <strong>Movie Count:</strong> Use a hash key <code>JSON.stringify([d.Title, d.year])</code> with a <code>Set</code> to count unique movie titles in each district.
+          </li>
+        </ul>
+
+        <!-- 3. Sample Table -->
+        <p class="code-label" style="margin-top: 1.5rem;">Data Sample (First 3 Rows)</p>
+        <div class="data-table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Year</th>
+                <th>Locations</th>
+                <th>Supervisor District</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>Ant-Man and the Wasp</strong></td>
+                <td>2018</td>
+                <td>Lombard Street (between Hyde and Leavenworth)</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td><strong>The Matrix Resurrections</strong></td>
+                <td>2021</td>
+                <td>Financial District / Montgomery St</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td><strong>Vertigo</strong></td>
+                <td>1958</td>
+                <td>Fort Point (Presidio)</td>
+                <td>2</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 02 / Step-by-Step Implementation -->
+      <section class="walkthrough-section" id="sec-vis">
+        <p class="eyebrow">02 / STEP-BY-STEP IMPLEMENTATION</p>
+        <h2>How the Cartogram is Built</h2>
+        <p>Using the D3.js pipeline, the visualization is built in four simple steps:</p>
+
+        <div class="step-item">
+          <h3>Step 1: Define Grid Layout</h3>
+          <p>Map the 11 districts into a 2D grid matrix to keep spatial directions while removing area size bias.</p>
+          <div class="code-block">
+            <pre><code class="language-javascript">const districts = [
+  { id: "1", col: 0, row: 1 },
+  { id: "2", col: 1, row: 0 },
+  { id: "3", col: 3, row: 0 },
+  { id: "4", col: 0, row: 2 },
+  { id: "5", col: 1, row: 1 },
+  { id: "6", col: 3, row: 1 },
+  { id: "7", col: 0, row: 3 },
+  { id: "8", col: 1, row: 2 },
+  { id: "9", col: 2, row: 2 },
+  { id: "10", col: 3, row: 3 },
+  { id: "11", col: 1, row: 3 },
+];</code></pre>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <h3>Step 2: Render Tiles with D3 Data Join</h3>
+          <p>Bind data to create SVG <code>&lt;rect&gt;</code> squares and text labels, then move them into position using <code>translate</code>.</p>
+          <div class="code-block">
+            <pre><code class="language-javascript">function drawMap(data) {
+  const svg = d3.select("#chart");
+  const tiles = svg.selectAll(".tile")
+    .data(data, (d) => d.id)
+    .join((enter) => {
+      const g = enter.append("g").attr("class", "tile");
+      g.append("rect").attr("width", 112).attr("height", 112).attr("rx", 2);
+      g.append("text").attr("class", "district-label").attr("x", 14).attr("y", 24);
+      g.append("text").attr("class", "count-label").attr("x", 14).attr("y", 68);
+      return g;
+    })
+    .attr("transform", (d) => `translate(${38 + d.col * 124},${17 + d.row * 124})`);
+  
+  tiles.select("rect").transition().duration(250)
+    .attr("fill", (d) => (d.count ? state.color(d.count) : "#e5e7df"));
+  tiles.select(".count-label").text((d) => fmt.format(d.count));
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <h3>Step 3: Color Scaling and Legend</h3>
+          <p>Use <code>d3.scaleSequentialSqrt</code> to map location counts to color lightness, and draw a smooth scale legend.</p>
+          <div class="code-block">
+            <pre><code class="language-javascript">state.color = d3
+  .scaleSequentialSqrt(d3.interpolateRgb("#e5eed5", "#efacd5"))
+  .domain([0, max]);
+
+function legend(max) {
+  const scale = d3.scaleSqrt().domain([0, max]).range([1, 349]);
+  d3.select("#legend").append("svg")
+    .selectAll("rect").data(d3.range(349)).join("rect")
+    .attr("x", (d) => d + 1)
+    .attr("fill", (d) => state.color(scale.invert(d + 1)));
+}</code></pre>
+          </div>
+        </div>
+
+        <div class="step-item">
+          <h3>Step 4: Bind Interactions</h3>
+          <p>Add click selection and accessible keyboard controls (Enter/Space) to every district tile.</p>
+          <div class="code-block">
+            <pre><code class="language-javascript">function events(selection) {
+  selection
+    .attr("tabindex", 0)
+    .attr("role", "button")
+    .on("click", (e, d) => choose(d.id))
+    .on("keydown", (e, d) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        choose(d.id);
+      }
+    });
+}</code></pre>
+          </div>
+        </div>
+
+        <!-- Step 4.5 Showcase -->
+        <div class="step-item" style="margin-top: 3rem;">
+          <h3>Step 4.5: Baseline Result Showcase</h3>
+          <p>This is the complete baseline map built from the 4 steps. Click any district tile and scroll down to view its movie list:</p>
+          
+          <div class="stage-box" id="box-step4">
+            <div class="map-panel">
+              <svg id="chart-step4" viewBox="0 0 600 510"></svg>
+              <div id="legend-step4"></div>
+            </div>
+            <div class="archive" style="margin-top: 1.5rem;">
+              <div class="section-heading">
+                <div>
+                  <h4 id="detail-title-step4" style="margin:0;">All districts</h4>
+                  <p id="detail-description-step4" style="font-size: 0.85rem; color: #6b7280;"></p>
+                </div>
+                <button id="clear-step4" hidden style="background:#e5e7eb; border:none; padding: 0.4rem 0.8rem; border-radius:4px; cursor:pointer;">Clear district ×</button>
+              </div>
+              <div id="film-list-step4" class="film-grid"></div>
+              <button id="more-step4" hidden style="margin-top: 1rem; width: 100%; padding: 0.5rem; border: 1px solid #ccc; background:#fff; cursor:pointer;">Load more records ↓</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 03 / Practices & Iterations -->
+      <section class="walkthrough-section" id="sec-practice">
+        <p class="eyebrow">03 / PRACTICES & ITERATIONS</p>
+        <h2>Interactive Iterations</h2>
+        <p>Two practice features updated from the baseline map, both supporting full interaction:</p>
+
+        <!-- Practice 1 -->
+        <article class="practice-card">
+          <p class="eyebrow">PRACTICE 01</p>
+          <h3>Color Scale Modification (cartogram_color.js)</h3>
+          <p>
+            Changed the color scheme to a high-contrast Yellow-Orange-Red gradient (<code>d3.interpolateYlOrRd</code>) to make filming hotspots stand out. Click a tile to filter records:
+          </p>
+
+          <!-- Practice 1 Demo -->
+          <div class="stage-box" id="box-p1">
+            <div class="map-panel">
+              <svg id="chart-p1" viewBox="0 0 600 510"></svg>
+              <div id="legend-p1"></div>
+            </div>
+            <div class="archive" style="margin-top: 1.5rem;">
+              <div class="section-heading">
+                <div>
+                  <h4 id="detail-title-p1" style="margin:0;">All districts</h4>
+                  <p id="detail-description-p1" style="font-size: 0.85rem; color: #6b7280;"></p>
+                </div>
+                <button id="clear-p1" hidden style="background:#e5e7eb; border:none; padding: 0.4rem 0.8rem; border-radius:4px; cursor:pointer;">Clear district ×</button>
+              </div>
+              <div id="film-list-p1" class="film-grid"></div>
+              <button id="more-p1" hidden style="margin-top: 1rem; width: 100%; padding: 0.5rem; border: 1px solid #ccc; background:#fff; cursor:pointer;">Load more records ↓</button>
+            </div>
+          </div>
+
+          <!-- Practice 1 Code Comparison -->
+          <div class="code-comparison">
+            <div>
+              <p class="code-label">Original Code (Baseline)</p>
+              <div class="code-block">
+                <pre><code class="language-javascript">state.color = d3
+  .scaleSequentialSqrt(d3.interpolateRgb("#e5eed5", "#efacd5"))
+  .domain([0, max]);</code></pre>
+              </div>
+            </div>
+            <div>
+              <p class="code-label">Modified Code (Practice 01 - Highlighted)</p>
+              <div class="code-block">
+                <pre data-line="2"><code class="language-javascript">state.color = d3
+  .scaleSequentialSqrt(d3.interpolateYlOrRd)
+  .domain([0, max]);</code></pre>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- Practice 2 -->
+        <article class="practice-card">
+          <p class="eyebrow">PRACTICE 02</p>
+          <h3>Interactive Hover Tooltip (cartogram_tooltip.js)</h3>
+          <p>
+            Added pointer event listeners (<code>pointerenter / pointermove / pointerleave</code>) to display a floating box with district record counts and percentages as you hover.
+          </p>
+
+          <!-- Practice 2 Demo -->
+          <div class="stage-box" id="box-p2">
+            <div class="map-panel">
+              <svg id="chart-p2" viewBox="0 0 600 510"></svg>
+              <div id="legend-p2"></div>
+            </div>
+            <div class="archive" style="margin-top: 1.5rem;">
+              <div class="section-heading">
+                <div>
+                  <h4 id="detail-title-p2" style="margin:0;">All districts</h4>
+                  <p id="detail-description-p2" style="font-size: 0.85rem; color: #6b7280;"></p>
+                </div>
+                <button id="clear-p2" hidden style="background:#e5e7eb; border:none; padding: 0.4rem 0.8rem; border-radius:4px; cursor:pointer;">Clear district ×</button>
+              </div>
+              <div id="film-list-p2" class="film-grid"></div>
+              <button id="more-p2" hidden style="margin-top: 1rem; width: 100%; padding: 0.5rem; border: 1px solid #ccc; background:#fff; cursor:pointer;">Load more records ↓</button>
+            </div>
+          </div>
+
+          <!-- Practice 2 Code Comparison -->
+          <div class="code-comparison">
+            <div>
+              <p class="code-label">Original Events Function (Baseline)</p>
+              <div class="code-block">
+                <pre><code class="language-javascript">function events(selection) {
+  selection
+    .attr("tabindex", 0)
+    .attr("role", "button")
+    .on("click", (e, d) => choose(d.id))
+    .on("keydown", (e, d) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        choose(d.id);
+      }
+    });
+}</code></pre>
+              </div>
+            </div>
+            <div>
+              <p class="code-label">Modified Events Function (Practice 02 - Highlighted)</p>
+              <div class="code-block">
+                <pre data-line="6,7,8,9,10,11,12"><code class="language-javascript">function events(selection) {
+  selection
+    .attr("tabindex", 0)
+    .attr("role", "button")
+    .on("click", (e, d) => choose(d.id))
+    .on("keydown", (e, d) => { ... })
+    .on("pointerenter", (e, d) => {
+      tooltip.attr("hidden", null).text(`District ${d.id} · ${fmt.format(d.count)} records`);
+      positionTooltip(e);
+    })
+    .on("pointermove", positionTooltip)
+    .on("pointerleave", () => tooltip.attr("hidden", true));
+}</code></pre>
+              </div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <!-- Footer -->
+      <footer>
+        <p>Source: Film Locations in San Francisco · CS6351 Final Project Submission</p>
+        <p>Interactive Walkthrough & Practice Demonstrations.</p>
+      </footer>
+    </main>
+
+    <!-- Global Tooltip Element -->
+    <div id="tooltip" hidden></div>
+
+    <!-- Prism.js Scripts -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/line-highlight/prism-line-highlight.min.js"></script>
+
+    <!-- D3 Instance Engine -->
+    <script>
+      function createInstance(config) {
+        const { chartId, legendId, titleId, descId, listId, clearId, moreId, colorInterpolator, enableTooltip } = config;
+
+        const districts = [
+          { id: "1", col: 0, row: 1 }, { id: "2", col: 1, row: 0 }, { id: "3", col: 3, row: 0 },
+          { id: "4", col: 0, row: 2 }, { id: "5", col: 1, row: 1 }, { id: "6", col: 3, row: 1 },
+          { id: "7", col: 0, row: 3 }, { id: "8", col: 1, row: 2 }, { id: "9", col: 2, row: 2 },
+          { id: "10", col: 3, row: 3 }, { id: "11", col: 1, row: 3 }
+        ];
+
+        const state = { rows: [], filtered: [], district: null, limit: 12, color: null };
+        const fmt = new Intl.NumberFormat("en-US");
+        const valid = new Set(districts.map(d => d.id));
+        const tooltip = d3.select("#tooltip");
+        const titleCount = rows => new Set(rows.map(d => JSON.stringify([d.Title, d.year]))).size;
+
+        d3.csv("./data/Film_Locations_in_San_Francisco_20261021.csv").then(rows => {
+          state.rows = rows.map((d, i) => ({
+            ...d, key: i, year: d["Release Year"].trim(), district: String(Number(d["Supervisor District"]))
+          }));
+
+          const totals = d3.rollup(state.rows.filter(d => valid.has(d.district)), v => v.length, d => d.district);
+          const max = d3.max(totals.values()) || 1;
+
+          state.color = d3.scaleSequentialSqrt(colorInterpolator).domain([0, max]);
+
+          document.getElementById(clearId).addEventListener("click", () => choose(null));
+          document.getElementById(moreId).addEventListener("click", () => {
+            state.limit += 12;
+            details();
+          });
+
+          legend(max);
+          render();
+        }).catch(err => console.error("Failed to load dataset", err));
+
+        function render() {
+          if (enableTooltip) tooltip.attr("hidden", true);
+          state.filtered = state.rows.filter(d => valid.has(d.district));
+          const counts = d3.rollup(state.filtered, v => v.length, d => d.district);
+          const data = districts.map(d => ({ ...d, count: counts.get(d.id) || 0 }));
+          drawMap(data);
+          updateSelection();
+          details();
+        }
+
+        function choose(id) {
+          state.district = state.district === id ? null : id;
+          state.limit = 12;
+          updateSelection();
+          details();
+        }
+
+        function updateSelection() {
+          d3.selectAll(`#${chartId} .tile`)
+            .classed("selected", d => d.id === state.district)
+            .attr("aria-pressed", d => String(d.id === state.district));
+          document.getElementById(clearId).hidden = !state.district;
+        }
+
+        function events(selection) {
+          selection
+            .attr("tabindex", 0)
+            .attr("role", "button")
+            .on("click", (e, d) => choose(d.id))
+            .on("keydown", (e, d) => {
+              if (e.key === "Enter" || e.key === " ") {
+                e.preventDefault();
+                choose(d.id);
+              }
+            });
+
+          if (enableTooltip) {
+            selection
+              .on("pointerenter", (e, d) => {
+                tooltip.attr("hidden", null).text(`District ${d.id} · ${fmt.format(d.count)} records · ${state.filtered.length ? d3.format(".1%")(d.count/state.filtered.length) : "0%"} of records`);
+                positionTooltip(e);
+              })
+              .on("pointermove", positionTooltip)
+              .on("pointerleave", () => tooltip.attr("hidden", true));
+          }
+        }
+
+        function positionTooltip(e) {
+          const box = tooltip.node().getBoundingClientRect();
+          tooltip.style("left", `${Math.max(8, Math.min(e.clientX + 14, innerWidth - box.width - 8))}px`)
+                 .style("top", `${Math.max(8, Math.min(e.clientY + 16, innerHeight - box.height - 8))}px`);
+        }
+
+        function drawMap(data) {
+          const svg = d3.select(`#${chartId}`);
+          svg.selectAll(".north").data([0]).join("text").attr("class", "north").attr("x", 550).attr("y", 32).attr("font-size", 11).attr("fill", "#647673").text("N ↑");
+          
+          const tiles = svg.selectAll(".tile").data(data, d => d.id).join(enter => {
+            const g = enter.append("g").attr("class", "tile");
+            g.append("rect").attr("width", 112).attr("height", 112).attr("rx", 2);
+            g.append("text").attr("class", "district-label").attr("x", 14).attr("y", 24).attr("font-size", 11).attr("letter-spacing", 1);
+            g.append("text").attr("class", "count-label").attr("x", 14).attr("y", 68).attr("font-size", 31).attr("font-weight", 500);
+            g.append("text").attr("class", "unit").attr("x", 14).attr("y", 89).attr("font-size", 10).text("location records");
+            g.append("text").attr("class", "selection-mark").attr("x", 94).attr("y", 24).attr("font-size", 13).text("●");
+            return g;
+          }).attr("transform", d => `translate(${38 + d.col * 124},${17 + d.row * 124})`);
+
+          events(tiles);
+          tiles.select("rect").transition().duration(250).attr("fill", d => d.count ? state.color(d.count) : "#e5e7df");
+          tiles.selectAll("text").attr("fill", d => d.count && d3.lab(state.color(d.count)).l < 55 ? "#fffdf5" : "#163d37");
+          tiles.select(".district-label").text(d => "DISTRICT " + d.id.padStart(2, "0"));
+          tiles.select(".count-label").text(d => fmt.format(d.count));
+        }
+
+        function legend(max) {
+          const root = d3.select(`#${legendId}`);
+          root.html("");
+          root.append("div").attr("class", "legend-line").html('<span class="swatch"></span> No records <span style="margin-left:16px">LOCATION RECORDS · FIXED SCALE</span>');
+          const svg = root.append("svg").attr("class", "legend-svg").attr("viewBox", "0 0 360 46");
+          const scale = d3.scaleSqrt().domain([0, max]).range([1, 349]);
+          svg.selectAll("rect").data(d3.range(349)).join("rect").attr("x", d => d + 1).attr("y", 6).attr("width", 1.1).attr("height", 10).attr("fill", d => state.color(scale.invert(d + 1)));
+          svg.append("g").attr("class", "axis").attr("transform", "translate(0,16)").call(d3.axisBottom(scale).tickValues([0, Math.round(max/4), Math.round(max/2), max]).tickSize(4).tickFormat(d3.format(",")));
+        }
+
+        function details() {
+          const rows = state.filtered.filter(d => !state.district || d.district === state.district).sort((a,b) => +b.year - +a.year || a.Title.localeCompare(b.Title));
+          document.getElementById(titleId).textContent = state.district ? "District " + state.district.padStart(2, "0") : "All districts";
+          document.getElementById(descId).textContent = `${fmt.format(rows.length)} location records · ${fmt.format(titleCount(rows))} titles · Showing ${Math.min(rows.length, state.limit)} records.`;
+          
+          const root = d3.select(`#${listId}`);
+          root.selectAll(".empty").remove();
+          const cards = root.selectAll(".film").data(rows.slice(0, state.limit), d => d.key).join(enter => {
+            const c = enter.append("article").attr("class", "film");
+            c.append("span").attr("class", "year");
+            c.append("h3");
+            c.append("p").attr("class", "place");
+            c.append("p").attr("class", "meta");
+            return c;
+          });
+          cards.select(".year").text(d => `${d.year || "Unknown year"} / DISTRICT ${d.district.padStart(2, "0")}`);
+          cards.select("h3").text(d => d.Title || "Untitled");
+          cards.select(".place").text(d => d.Locations || "Location not specified");
+          cards.select(".meta").text(d => d.Director ? "Directed by " + d.Director : "Director not specified");
+          document.getElementById(moreId).hidden = rows.length <= state.limit;
+        }
+      }
+
+      window.addEventListener("DOMContentLoaded", () => {
+        // 1. Top Demo
+        createInstance({
+          chartId: "chart-top", legendId: "legend-top", titleId: "detail-title-top",
+          descId: "detail-description-top", listId: "film-list-top", clearId: "clear-top",
+          moreId: "more-top", colorInterpolator: d3.interpolateRgb("#e5eed5", "#efacd5"), enableTooltip: false
+        });
+
+        // 2. Step 4.5 Baseline Showcase
+        createInstance({
+          chartId: "chart-step4", legendId: "legend-step4", titleId: "detail-title-step4",
+          descId: "detail-description-step4", listId: "film-list-step4", clearId: "clear-step4",
+          moreId: "more-step4", colorInterpolator: d3.interpolateRgb("#e5eed5", "#efacd5"), enableTooltip: false
+        });
+
+        // 3. Practice 1 (Yellow-Orange-Red Scale)
+        createInstance({
+          chartId: "chart-p1", legendId: "legend-p1", titleId: "detail-title-p1",
+          descId: "detail-description-p1", listId: "film-list-p1", clearId: "clear-p1",
+          moreId: "more-p1", colorInterpolator: d3.interpolateYlOrRd, enableTooltip: false
+        });
+
+        // 4. Practice 2 (With Hover Tooltip)
+        createInstance({
+          chartId: "chart-p2", legendId: "legend-p2", titleId: "detail-title-p2",
+          descId: "detail-description-p2", listId: "film-list-p2", clearId: "clear-p2",
+          moreId: "more-p2", colorInterpolator: d3.interpolateRgb("#e5eed5", "#efacd5"), enableTooltip: true
+        });
+      });
+    </script>
+  </body>
+</html>

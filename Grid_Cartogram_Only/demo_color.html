@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/d3.min.js" defer></script>
+    <script src="cartogram_color.js" defer></script>
+    <style>body { background: #fff; margin: 0; padding: 10px; }</style>
+  </head>
+  <body>
+    <div class="map-panel">
+      <svg id="chart" viewBox="0 0 600 510"></svg>
+      <div id="legend"></div>
+    </div>
+    <div class="archive" style="margin-top: 1.5rem;">
+      <div class="section-heading">
+        <h3 id="detail-title">All districts</h3>
+        <p id="detail-description"></p>
+        <button id="clear" hidden>Clear district ×</button>
+      </div>
+      <div id="film-list" class="film-grid"></div>
+      <button id="more" hidden>Load more records ↓</button>
+    </div>
+    <div id="tooltip" hidden></div>
+  </body>
+</html>
