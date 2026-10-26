@@ -1,0 +1,901 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SF Neighborhood Grid Cartogram Walkthrough</title>
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      html {
+        scroll-behavior: smooth;
+        scroll-padding-top: 24px;
+      }
+      body {
+        margin: 0;
+        font:
+          16px/1.75 Arial,
+          Helvetica,
+          sans-serif;
+        background: #e3e9ed;
+        color: #3e3e3e;
+      }
+      main {
+        max-width: 1160px;
+        margin: auto;
+        padding: 30px 32px 60px;
+      }
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 22px;
+        border-bottom: 1px solid #a4afb4;
+        padding: 0 0 24px;
+      }
+      .brand {
+        font-size: 18px;
+        font-weight: 800;
+        letter-spacing: 1px;
+        text-decoration: none;
+        color: #343e3e;
+      }
+      .edition,
+      .eyebrow {
+        font: 11px monospace;
+        letter-spacing: 1.8px;
+        color: #646666;
+      }
+      .intro {
+        padding: 44px 0 30px;
+      }
+      .eyebrow {
+        margin: 0 0 16px;
+      }
+      h1 {
+        font-size: clamp(38px, 5.5vw, 64px);
+        line-height: 1.1;
+        letter-spacing: -2px;
+        font-weight: 500;
+        margin: 16px 0 24px;
+      }
+      h2 {
+        font-size: 30px;
+        line-height: 1.3;
+        letter-spacing: -0.5px;
+        font-weight: 500;
+        margin: 10px 0 20px;
+      }
+      h3 {
+        font-size: 20px;
+        line-height: 1.4;
+        margin: 24px 0 12px;
+      }
+      h4 {
+        font-size: 16px;
+        margin: 22px 0 12px;
+      }
+      p {
+        margin: 10px 0 18px;
+      }
+      a {
+        color: #24584e;
+        text-underline-offset: 4px;
+      }
+      .lead {
+        font-size: 18px;
+        max-width: 760px;
+        color: #566466;
+      }
+      .nav {
+        display: flex;
+        gap: 9px;
+        flex-wrap: wrap;
+        margin: 24px 0 0;
+      }
+      .nav a,
+      .button {
+        display: inline-block;
+        background: #f8faf7;
+        border: 1px solid #aebdb7;
+        padding: 9px 13px;
+        border-radius: 4px;
+        font-size: 13px;
+        text-decoration: none;
+      }
+      .nav a:hover,
+      .button:hover {
+        background: #e4eedb;
+      }
+      .section {
+        padding: 36px 0;
+        border-top: 1px solid #a4afb4;
+      }
+      .section.top-demo {
+        padding-top: 0;
+        border-top: 0;
+      }
+      .stats {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin: 24px 0;
+      }
+      .stat {
+        background: #f5f6f8;
+        border-left: 5px solid #214b43;
+        padding: 22px 18px;
+        border-radius: 7px;
+      }
+      .stat strong {
+        font-size: 31px;
+        font-weight: 600;
+        display: block;
+      }
+      .stat span {
+        display: block;
+        margin-top: 5px;
+        font-size: 11px;
+        letter-spacing: 0.7px;
+        color: #5e6d70;
+      }
+      .columns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+      }
+      .panel {
+        padding: 22px;
+        background: #f5f6f7;
+        border: 1px solid #c1ccd1;
+        border-radius: 6px;
+      }
+      .note {
+        font-size: 13px;
+        color: #566466;
+        line-height: 1.7;
+      }
+      .emphasis {
+        padding: 17px 20px;
+        border-left: 4px solid #416d59;
+        background: #f4f6ee;
+        margin: 24px 0;
+      }
+      code {
+        font:
+          13px/1.6 ui-monospace,
+          SFMono-Regular,
+          Consolas,
+          monospace;
+        background: #f2f3ef;
+        border-radius: 3px;
+        padding: 2px 5px;
+        color: #214e43;
+        overflow-wrap: anywhere;
+      }
+      .step {
+        padding: 5px 0 18px;
+      }
+      .step + .step {
+        border-top: 1px solid #bfcbcf;
+        margin-top: 12px;
+      }
+      .explain {
+        font-size: 14px;
+      }
+      .pipeline {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+        align-items: center;
+        margin: 22px 0;
+      }
+      .pipeline span {
+        padding: 10px 13px;
+        background: #f7f8f3;
+        border: 1px solid #c1ccd1;
+        border-radius: 4px;
+        font-size: 13px;
+      }
+      .demo {
+        background: #fff;
+        border: 1px solid #aebdb7;
+        border-radius: 7px;
+        overflow: hidden;
+        margin: 24px 0;
+      }
+      .demo-head {
+        background: #edf1e9;
+        padding: 14px 17px;
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        font-size: 13px;
+      }
+      iframe {
+        display: block;
+        width: 100%;
+        height: 790px;
+        border: 0;
+        background: #fff;
+      }
+      .table-wrap {
+        overflow-x: auto;
+      }
+      table {
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 13px;
+        background: #f6f7f8;
+      }
+      th,
+      td {
+        text-align: left;
+        vertical-align: top;
+        padding: 13px 14px;
+        border-bottom: 1px solid #c4cfd1;
+      }
+      th {
+        background: #edf0f2;
+      }
+      td {
+        overflow-wrap: anywhere;
+      }
+      li {
+        margin: 8px 0;
+      }
+      .practice-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 24px;
+        align-items: start;
+      }
+      .practice-card {
+        background: #f9faf9;
+        border: 1px solid #b8c7bf;
+        border-radius: 8px;
+        padding: 24px;
+      }
+      .practice-card h3 {
+        font-size: 25px;
+        font-weight: 500;
+        margin: 10px 0 16px;
+      }
+      .practice-card details {
+        border-top: 1px solid #d0dad3;
+        padding: 12px 0;
+      }
+      .practice-card summary {
+        font-weight: 600;
+        font-size: 14px;
+        cursor: pointer;
+      }
+      .practice-card details p {
+        font-size: 14px;
+        margin: 10px 0;
+      }
+      .checklist {
+        display: grid;
+        gap: 12px;
+      }
+      .checklist label {
+        display: flex;
+        gap: 9px;
+        align-items: start;
+        font-size: 14px;
+      }
+      .checklist input {
+        width: 17px;
+        height: 17px;
+        flex: 0 0 17px;
+        margin-top: 4px;
+        accent-color: #365f50;
+      }
+      blockquote {
+        border-left: 3px solid #496c59;
+        margin: 20px 0;
+        padding: 0 18px;
+        color: #4b6257;
+      }
+      .reflection {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 15px;
+      }
+      .reflection p {
+        padding: 16px;
+        background: #f5f6ef;
+        font-size: 14px;
+        border-radius: 4px;
+      }
+      footer {
+        padding-top: 22px;
+        border-top: 1px solid #a4afb4;
+        font-size: 12px;
+        color: #566466;
+      }
+      :focus-visible {
+        outline: 3px solid #5d803b;
+        outline-offset: 4px;
+      }
+      @media (max-width: 800px) {
+        main {
+          padding: 24px 18px;
+        }
+        .columns,
+        .practice-grid {
+          grid-template-columns: 1fr;
+        }
+        .stats {
+          grid-template-columns: 1fr 1fr;
+        }
+        .reflection {
+          grid-template-columns: 1fr;
+        }
+        .demo-head {
+          flex-direction: column;
+          gap: 5px;
+        }
+        .edition {
+          display: none;
+        }
+      }
+      @media (max-width: 440px) {
+        main {
+          padding: 20px 14px;
+        }
+        h1 {
+          letter-spacing: -1.2px;
+        }
+        h2 {
+          font-size: 27px;
+        }
+        .practice-card {
+          padding: 19px;
+        }
+        .stat {
+          padding: 16px 12px;
+        }
+        .stat strong {
+          font-size: 27px;
+        }
+        td,
+        th {
+          padding: 10px;
+          font-size: 12px;
+        }
+      }
+      @media print {
+        .demo,
+        .nav {
+          display: none;
+        }
+        body {
+          background: #fff;
+        }
+        .practice-card {
+          break-inside: avoid;
+        }
+      }
+    
+/* Step format inspired by the supplied reference screenshot. */
+.step {border:0;background:transparent;padding:0;margin:36px 0 48px;}
+.step h3 {font-size:25px;color:#111827;margin-bottom:16px;}
+.code-example {background:#1e272e;border-radius:10px;padding:22px 26px;max-width:100%;overflow:auto;max-height:370px;color:#e6edf3;font:16px/1.7 ui-monospace,SFMono-Regular,Consolas,monospace;tab-size:2;}
+.code-example code {background:transparent;color:inherit;padding:0;white-space:pre;}
+.code-caption {font-size:13px;color:#526373;margin:12px 0 8px;}
+.practice-grid {display:block;}
+.practice-card {background:transparent;border:0;border-top:1px solid #aebcc3;border-radius:0;padding:30px 0;margin-top:28px;}
+.practice-card h3 {font-size:27px;color:#111827;}
+@media(max-width:600px){.code-example{font-size:13px;padding:16px}.step h3{font-size:22px}}
+
+.syntax-keyword{color:#c792ea}.syntax-string{color:#9bd6a6}.syntax-number{color:#f6ac69}.syntax-comment{color:#a4b0bd}
+</style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="index.html">SF / ON LOCATION</a
+        ><span class="edition">WALKTHROUGH &amp; WORKSHOP</span>
+      </header>
+      <div class="intro">
+        <p class="eyebrow">DEVELOPMENT WALKTHROUGH · NEIGHBORHOOD EDITION</p>
+        <h1>Building a neighborhood<br />grid cartogram.</h1>
+        <p class="lead">
+          Explore film-location records across San Francisco’s analysis
+          neighborhoods. Understand the data and D3 workflow, experience the
+          website, then build your own version with Copilot.
+        </p>
+        <nav class="nav" aria-label="Walkthrough sections">
+          <a href="#data">Data foundation</a
+          ><a href="#implementation">How it is built</a
+          ><a href="#baseline">Baseline showcase</a
+          ><a href="#copilot">Build your version</a
+          ><a href="#practice">Two practice tasks</a>
+        </nav>
+      </div>
+      <section class="section top-demo" id="live">
+        <p class="eyebrow">LIVE DEMO / THE NEIGHBORHOOD WEBSITE</p>
+        <h2>One neighborhood, one tile.</h2>
+        <p>
+          Each equal square represents one analysis neighborhood. The count and
+          color summarize its filming-location records. The grid approximates
+          geographic directions; the reference map helps you locate the same
+          area in real geography.
+        </p>
+        <div class="demo">
+          <div class="demo-head">
+            <strong>Our working website · grid and geographic reference</strong
+            ><a href="index.html" target="_blank" rel="noopener"
+              >Open the full website ↗</a
+            >
+          </div>
+          <iframe
+            src="walkthrough-demo.html"
+            title="Live neighborhood grid cartogram and linked geographic reference"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <p class="note">
+          Hover or select a neighborhood in either map. Use “View records” to
+          reach the archive. In this embedded view the maps stack vertically for
+          readability; scroll inside the preview to see the geographic reference
+          and records. The full website also supports year and text filters.
+        </p>
+      </section>
+      <section class="section" id="data">
+        <p class="eyebrow">01 / DATA FOUNDATION</p>
+        <h2>Dataset &amp; Processing Details</h2>
+        <p>
+          The project uses your supplied
+          <strong>Film Locations in San Francisco</strong> CSV. We now group
+          records by <strong>Analysis Neighborhood</strong> instead of
+          Supervisor District, so recognizable places such as Chinatown, Marina
+          and North Beach become the comparison units.
+        </p>
+        <div class="stats">
+          <div class="stat">
+            <strong>2,214</strong><span>TOTAL LOCATION RECORDS</span>
+          </div>
+          <div class="stat">
+            <strong>2,070</strong><span>MAPPED RECORDS</span>
+          </div>
+          <div class="stat">
+            <strong>41</strong><span>ANALYSIS AREAS DISPLAYED</span>
+          </div>
+          <div class="stat">
+            <strong>40</strong><span>AREAS WITH RECORDS</span>
+          </div>
+        </div>
+        <p>
+          Mapped records contain
+          <strong>290 distinct title and release-year combinations</strong>. A
+          record is one filming-location entry, not a unique film or unique
+          address. The same title can appear in several rows because it has
+          several recorded locations.
+        </p>
+        <h3>Data pipeline details</h3>
+        <ul>
+          <li>
+            <strong>Cleaning:</strong> trim neighborhood names and year text,
+            while preserving the source title, location and other fields.
+          </li>
+          <li>
+            <strong>Filtering:</strong> match the supplied neighborhood names to
+            the layout. All 40 named neighborhoods match. The 144 rows with no
+            neighborhood are excluded from mapped views and reported; missing
+            names are not guessed from coordinates.
+          </li>
+          <li>
+            <strong>Aggregation:</strong> group matching records by neighborhood
+            and count the rows in each group. Count distinct title/year
+            combinations separately.
+          </li>
+          <li>
+            <strong>Retaining zero values:</strong> DataSF supplies 41 analysis
+            areas. Visitacion Valley has no records in this CSV, so it is still
+            displayed as a gray tile with zero. A zero means no matching records
+            in this dataset, not that filming never happened there.
+          </li>
+        </ul>
+        <h3>Data sample from the supplied CSV</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>Release year</th>
+                <th>Location</th>
+                <th>Analysis neighborhood</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Milk</td>
+                <td>2008</td>
+                <td>El Camino Del Mar</td>
+                <td>Lincoln Park</td>
+              </tr>
+              <tr>
+                <td>Chance Season 2</td>
+                <td>2017</td>
+                <td>Coit Tower</td>
+                <td>North Beach</td>
+              </tr>
+              <tr>
+                <td>Red Widow</td>
+                <td>2013</td>
+                <td>Mason &amp; Sacramento St</td>
+                <td>Nob Hill</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="note">
+          The year refers to release, not filming. The archive shows source
+          records, so repeated titles are expected. Counts are not normalized by
+          area or population.
+        </p>
+      </section>
+      <section class="section" id="implementation">
+        <p class="eyebrow">02 / STEP BY STEP IMPLEMENTATION</p>
+        <h2>How the Cartogram is Built</h2>
+        <p>
+          D3 connects data to page elements. We design the geographic
+          abstraction, the visual encoding and the interactions. HTML provides
+          the structure, CSS controls appearance, and SVG holds the squares,
+          labels and map paths.
+        </p>
+        <div class="pipeline" aria-label="Data workflow">
+          <span>Read CSV and local geography</span><b>→</b
+          ><span>Filter and count</span><b>→</b><span>Bind and draw</span
+          ><b>→</b><span>Respond to interaction</span>
+        </div>
+        <div class="step">
+          <h3>Step 1: Define the Neighborhood Grid Layout</h3>
+          <p>
+            The earlier version used eleven supervisor districts. This version
+            uses 41 DataSF analysis areas so the map offers finer spatial detail
+            and recognizable neighborhood names.
+          </p>
+          <p>
+            The layout is precomputed using the analysis-area geometry. A
+            connected set of 40 mainland grid cells approximates the city
+            footprint. Geographic representative points are assigned one-to-one
+            to cells by minimizing overall displacement. Treasure Island
+            occupies a detached northeast inset. Its displayed distance is not
+            geographically accurate.
+          </p>
+          <p>
+            At runtime, D3 reads the saved layout. Each neighborhood has a name,
+            a column, a row and short label lines. The row and column place the
+            tile; the CSV’s individual filming coordinates do not directly place
+            that tile.
+          </p>
+          <p class="explain">
+            <strong>Find this responsibility in the project:</strong>
+            <code>data/neighborhood-layout.json</code> stores the layout;
+            <code>neighborhoods</code> holds it after loading. The map’s row and
+            column calculations use those values. The browser is not solving the
+            layout optimization on every page load.
+          </p>
+        <p class="code-caption">Concept example — shortened for explanation; surrounding variables come from your implementation.</p><pre class="code-example" tabindex="0" aria-label="Step 1: Define the Neighborhood Grid Layout code example"><code><span class="syntax-keyword">const</span> layout = await d3.json(
+  <span class="syntax-string">&quot;data/neighborhood-layout.json&quot;</span>
+);
+<span class="syntax-keyword">const</span> neighborhoods = layout.neighborhoods;
+
+<span class="syntax-comment">// Each area already has a saved column and row.</span>
+<span class="syntax-comment">// Convert its grid position into screen coordinates.</span>
+<span class="syntax-keyword">const</span> x = d.col * cellStep;
+<span class="syntax-keyword">const</span> y = d.row * cellStep;</code></pre></div>
+<div class="step">
+          <h3>Step 2: Render Tiles with a D3 Data Join</h3>
+          <p>
+            After filtering, the page attaches a count to each neighborhood
+            object. A keyed data join matches that object to its SVG group using
+            the neighborhood name. Each group contains a square, a name and a
+            count. The name acts as a stable identity even when its count
+            changes.
+          </p>
+          <p>
+            Every square has the same dimensions. The group’s position is
+            calculated from its row and column. A neighborhood with no matching
+            records stays in the layout with a zero rather than disappearing.
+          </p>
+          <p class="explain">
+            <strong>Look for:</strong> <code>drawMap</code>, <code>data</code>,
+            <code>join</code>, the name key, and the group-position calculation.
+            These are search terms for understanding your own implementation,
+            not replacement instructions.
+          </p>
+        <p class="code-caption">Concept example — shortened for explanation; surrounding variables come from your implementation.</p><pre class="code-example" tabindex="0" aria-label="Step 2: Render Tiles with a D3 Data Join code example"><code><span class="syntax-keyword">const</span> tiles = grid.selectAll(<span class="syntax-string">&quot;g.tile&quot;</span>)
+  .data(neighborhoodData, d =&gt; d.name)
+  .join(<span class="syntax-string">&quot;g&quot;</span>)
+  .attr(<span class="syntax-string">&quot;class&quot;</span>, <span class="syntax-string">&quot;tile&quot;</span>)
+  .attr(<span class="syntax-string">&quot;transform&quot;</span>, d =&gt;
+    `translate(${d.col * cellStep}, ${d.row * cellStep})`
+  );
+
+<span class="syntax-comment">// Each group contains a square, a name and a count.</span>
+<span class="syntax-comment">// Keep the same name key when filtered counts change.</span></code></pre></div>
+<div class="step">
+          <h3>Step 3: Create the Color Scale and Legend</h3>
+          <p>
+            A sequential square-root scale turns counts into colors. It makes
+            smaller counts more distinguishable. The input range is fixed from
+            zero to the full dataset’s largest neighborhood total,
+            <strong>299 records</strong>, in Financial District/South Beach.
+            This keeps a given color numerically consistent across filters.
+          </p>
+          <p>
+            The legend samples the same scale used by both maps. Gray is a
+            separate zero-count color. All tiles are equal in size; their area
+            does not represent record count, land area or population.
+          </p>
+          <p class="explain">
+            <strong>Look for:</strong> <code>state.color</code>,
+            <code>scaleSequentialSqrt</code>, the input <code>domain</code>, the
+            rectangle’s <code>fill</code>, and <code>legend</code>. Color is a
+            data encoding, so changing the page background alone does not change
+            it.
+          </p>
+        <p class="code-caption">Concept example — shortened for explanation; surrounding variables come from your implementation.</p><pre class="code-example" tabindex="0" aria-label="Step 3: Create the Color Scale and Legend code example"><code><span class="syntax-keyword">const</span> color = d3.scaleSequentialSqrt(palette)
+  .domain([<span class="syntax-number">0</span>, <span class="syntax-number">299</span>]);
+
+<span class="syntax-comment">// Apply the count-to-color rule to each tile.</span>
+tiles.select(<span class="syntax-string">&quot;rect&quot;</span>)
+  .attr(<span class="syntax-string">&quot;fill&quot;</span>, d =&gt; d.count === <span class="syntax-number">0</span>
+    ? zeroColor
+    : color(d.count));
+
+<span class="syntax-comment">// The legend and geographic reference share this scale.</span></code></pre></div>
+<div class="step">
+          <h3>Step 4: Connect Interaction and Geographic Reference</h3>
+          <p>
+            The reference map reads local GeoJSON boundaries. D3 projects those
+            shapes and draws their SVG paths. It provides geographic context for
+            the simplified grid; it is not a second ranking chart.
+          </p>
+          <p>
+            Both maps use the same counts and selection state. Selecting North
+            Beach in either view highlights the corresponding area in the other
+            and updates the archive. Hovering or focusing an area also helps
+            locate it in both views. Enter and Space select a focused area;
+            Escape clears the selection.
+          </p>
+          <p class="explain">
+            <strong>Look for:</strong> <code>drawReference</code>,
+            <code>geoMercator</code>, <code>geoPath</code>, <code>events</code>,
+            <code>choose</code>, and <code>updateSelection</code>. Shared state
+            links the views without changing the underlying records.
+          </p>
+        <p class="code-caption">Concept example — shortened for explanation; surrounding variables come from your implementation.</p><pre class="code-example" tabindex="0" aria-label="Step 4: Connect Interaction and Geographic Reference code example"><code><span class="syntax-keyword">const</span> projection = d3.geoMercator()
+  .fitSize([width, height], geography);
+<span class="syntax-keyword">const</span> path = d3.geoPath(projection);
+
+<span class="syntax-comment">// Both views select a neighborhood using the same name.</span>
+tiles.on(<span class="syntax-string">&quot;click&quot;</span>, (event, d) =&gt; choose(d.name));
+
+<span class="syntax-comment">// choose updates the shared selection, highlights</span>
+<span class="syntax-comment">// both maps and refreshes the neighborhood record list.</span></code></pre></div>
+<div class="emphasis">
+          <strong>A geographic approximation:</strong> these are DataSF analysis
+          areas based on grouped census tracts, not legally defined neighborhood
+          boundaries. Equal tiles simplify shape, distance and some adjacencies.
+          The reference map makes that simplification visible.
+        </div>
+      </section>
+      <section class="section" id="baseline">
+        <p class="eyebrow">STEP 4.5 / BASELINE RESULT SHOWCASE</p>
+        <h2>Experience the result before changing it.</h2>
+        <p>
+          This preview keeps the original palette, the linked maps, the filters
+          and click-to-view records. Its hover panel is hidden for the exercise,
+          although the full website includes one. Use it as a behavior reference
+          when building your own baseline.
+        </p>
+        <div class="demo">
+          <div class="demo-head">
+            <strong>Baseline preview · hover details hidden</strong
+            ><a href="walkthrough-baseline.html" target="_blank" rel="noopener"
+              >Open baseline preview ↗</a
+            >
+          </div>
+          <iframe
+            src="walkthrough-baseline.html"
+            title="Neighborhood baseline preview with hover details hidden"
+            loading="lazy"
+          ></iframe>
+        </div>
+        <ol>
+          <li>
+            Compare the grid’s approximate placement with the geographic
+            reference.
+          </li>
+          <li>
+            Select <strong>North Beach</strong>: with filters cleared, expect
+            <strong>202 location records and 99 title/year combinations</strong
+            >.
+          </li>
+          <li>
+            Choose <strong>View records</strong> and inspect the titles and
+            locations. Repeated titles may represent different source rows.
+          </li>
+          <li>
+            Click the selected neighborhood again, use
+            <strong>Clear neighborhood</strong>, or press Escape to deselect.
+            Load more reveals another 12 records.
+          </li>
+          <li>
+            Change the year or search text. Counts update while the layout and
+            the color domain remain fixed.
+          </li>
+        </ol>
+      </section>
+      <section class="section" id="copilot">
+        <p class="eyebrow">BUILD YOUR OWN VERSION</p>
+        <h2>Use the dataset and Copilot.</h2>
+        <p>
+          Start a new project in VS Code using the CSV and the visual reference.
+          We are sharing the dataset and design goals rather than participant
+          starter code. Your version can look different, but it should
+          communicate the same data clearly.
+        </p>
+        <p>
+          <a
+            class="button"
+            href="data/Film_Locations_in_San_Francisco_20261021.csv"
+            download
+            >Download the CSV dataset ↓</a
+          >
+        </p>
+        <ol>
+          <li>
+            Ask Copilot to inspect the columns and explain the difference
+            between a record, a title and a neighborhood.
+          </li>
+          <li>
+            Describe the baseline: one equal square per analysis neighborhood, a
+            roughly geographic layout, counts, a legend, filters, and
+            click-to-view titles and locations.
+          </li>
+          <li>
+            Ask for a plan and build it in stages. Discuss how to obtain
+            geographic context and document how your tile positions were chosen.
+            The CSV alone does not contain neighborhood boundary polygons.
+          </li>
+          <li>
+            Run your version with Live Server. Verify the counts and get the
+            basic interactions working before adding a tooltip.
+          </li>
+        </ol>
+        <blockquote>
+          Ask Copilot to explain where your own project loads records, groups
+          them, binds them to squares, maps counts to colors and handles
+          interactions. Understand each part before requesting an edit.
+        </blockquote>
+        <p class="note">
+          Our project loads all runtime data locally. Participants need their
+          own Copilot access. The 41-area boundary source is linked at the end
+          if you want to build your own geographic reference.
+        </p>
+      </section>
+      <section class="section" id="practice"><p class="eyebrow">03 / PRACTICES &amp; ITERATIONS</p><h2>Modify the code in two tasks.</h2><p>Complete both tasks in the same project. These examples use the variable and function names in the supplied neighborhood project. Update existing definitions instead of adding duplicates.</p><article class="practice-card" id="task-color"><p class="eyebrow">TASK 01 / COLOR ENCODING</p><h3>Change the Color Palette</h3><div class="step"><h3>Step 1: Locate the Existing Color Scale</h3><p>In <code>cartogram.js</code>, find <code>state.color</code> inside the data-loading code. This is the current palette:</p><pre class="code-example" tabindex="0"><code>state.color = d3
+  .scaleSequentialSqrt(d3.interpolateRgb(<span class="syntax-string">&quot;#e5eed5&quot;</span>, <span class="syntax-string">&quot;#efacd5&quot;</span>))
+  .domain([<span class="syntax-number">0</span>, max]);</code></pre></div><div class="step"><h3>Step 2: Replace the Palette</h3><p>Replace that scale definition with the following blue sequential palette. Keep <code>max</code> and the square-root scale unchanged.</p><pre class="code-example" tabindex="0"><code>state.color = d3
+  .scaleSequentialSqrt(d3.interpolateBlues)
+  .domain([<span class="syntax-number">0</span>, max]);</code></pre></div><div class="step"><h3>Step 3: Keep the Legend and Labels Consistent</h3><p>Keep the existing shared fill function and legend code. Both maps use this fill rule. Save and refresh the website; the legend should also turn blue. If dark tiles reduce text readability, add the CSS below to <code>styles.css</code>.</p><pre class="code-example" tabindex="0"><code><span class="syntax-comment">// cartogram.js — keep the existing function.</span>
+<span class="syntax-keyword">function</span> fill(d) {
+  <span class="syntax-keyword">return</span> d.count ? state.color(d.count) : <span class="syntax-string">&quot;#e5e7df&quot;</span>;
+}</code></pre></div><pre class="code-example" tabindex="0"><code>/* styles.css — optional text outline for stronger contrast */
+.tile text {
+  fill: #<span class="syntax-number">111827</span>;
+  paint-order: stroke;
+  stroke: #ffffff;
+  stroke-width: 3px;
+  stroke-linejoin: round;
+}</code></pre></article><article class="practice-card" id="task-tooltip"><p class="eyebrow">TASK 02 / HOVER INTERACTION</p><h3>Add a Tooltip</h3><p>The complete supplied website already includes these tooltip functions. Use the examples to add them to your own baseline, or locate and edit their existing definitions. The baseline preview hides its tooltip through CSS; open <code>index.html</code> to see the full behavior.</p><div class="step"><h3>Step 1: Add the Tooltip Container</h3><p>In <code>index.html</code>, place one tooltip container before the closing body tag. If it already exists, keep it rather than adding another.</p><pre class="code-example" tabindex="0"><code>&lt;div id=<span class="syntax-string">&quot;tooltip&quot;</span> hidden&gt;&lt;/div&gt;</code></pre></div><div class="step"><h3>Step 2: Style the Tooltip</h3><p>In <code>styles.css</code>, add or update this rule. Fixed positioning matches the pointer’s viewport coordinates. The hidden rule keeps the panel invisible until JavaScript shows it.</p><pre class="code-example" tabindex="0"><code>#tooltip {
+  position: fixed;
+  z-index: <span class="syntax-number">1000</span>;
+  max-width: min(300px, calc(100vw - 16px));
+  box-sizing: border-box;
+  background: #17212b;
+  color: #ffffff;
+  padding: 12px 15px;
+  border-radius: 6px;
+  font-size: 13px;
+  line-height: <span class="syntax-number">1.6</span>;
+  pointer-events: none;
+}
+#tooltip[hidden] { display: none; }</code></pre></div><div class="step"><h3>Step 3: Read the Current Neighborhood Data</h3><p>In <code>cartogram.js</code>, keep one tooltip selection near the top of the file. Add or update <code>showInfo</code> using the neighborhood name, count and filtered total. This function also preserves the linked-map hover highlight.</p><pre class="code-example" tabindex="0"><code><span class="syntax-keyword">const</span> tooltip = d3.select(<span class="syntax-string">&quot;#tooltip&quot;</span>);
+
+<span class="syntax-keyword">function</span> showInfo(event, d) {
+  state.hovered = d.name;
+  d3.selectAll(<span class="syntax-string">&quot;.tile,.geo-neighborhood&quot;</span>).classed(
+    <span class="syntax-string">&quot;hovered&quot;</span>,
+    (item) =&gt; item.name === d.name,
+  );
+  <span class="syntax-keyword">const</span> share = state.filtered.length
+    ? d3.format(<span class="syntax-string">&quot;.1%&quot;</span>)(d.count / state.filtered.length)
+    : <span class="syntax-string">&quot;0%&quot;</span>;
+  tooltip
+    .attr(<span class="syntax-string">&quot;hidden&quot;</span>, <span class="syntax-keyword">null</span>)
+    .text(
+      `${d.name} · ${fmt.format(d.count)} records · ${share} of filtered mapped records`,
+    );
+  <span class="syntax-keyword">const</span> rect = event.currentTarget.getBoundingClientRect();
+  positionTooltip(
+    Number.isFinite(event.clientX)
+      ? event
+      : {
+          clientX: rect.left + rect.width / <span class="syntax-number">2</span>,
+          clientY: rect.top + rect.height / <span class="syntax-number">2</span>,
+        },
+  );
+  updateReferenceCaption();
+}</code></pre></div><div class="step"><h3>Step 4: Position and Hide the Tooltip</h3><p>Add or update these helpers in <code>cartogram.js</code>. Positioning is clamped to the viewport; clearing hover hides the panel and updates the linked reference. The existing render function already calls <code>clearHover()</code> after filters change.</p><pre class="code-example" tabindex="0"><code><span class="syntax-keyword">function</span> positionTooltip(e) {
+  <span class="syntax-keyword">const</span> box = tooltip.node().getBoundingClientRect();
+  tooltip
+    .style(
+      <span class="syntax-string">&quot;left&quot;</span>,
+      `${Math.max(<span class="syntax-number">8</span>, Math.min(e.clientX + <span class="syntax-number">14</span>, innerWidth - box.width - <span class="syntax-number">8</span>))}px`,
+    )
+    .style(
+      <span class="syntax-string">&quot;top&quot;</span>,
+      `${Math.max(<span class="syntax-number">8</span>, Math.min(e.clientY + <span class="syntax-number">16</span>, innerHeight - box.height - <span class="syntax-number">8</span>))}px`,
+    );
+}
+
+<span class="syntax-keyword">function</span> clearHover() {
+  state.hovered = <span class="syntax-keyword">null</span>;
+  tooltip.attr(<span class="syntax-string">&quot;hidden&quot;</span>, <span class="syntax-keyword">true</span>);
+  d3.selectAll(<span class="syntax-string">&quot;.tile,.geo-neighborhood&quot;</span>).classed(<span class="syntax-string">&quot;hovered&quot;</span>, false);
+  <span class="syntax-keyword">if</span> ($(<span class="syntax-string">&quot;reference-caption&quot;</span>)) updateReferenceCaption();
+}</code></pre></div><div class="step"><h3>Step 5: Bind Pointer and Keyboard Events</h3><p>Update the existing <code>events(selection)</code> function. Keep click selection and keyboard controls while adding tooltip handlers. The project already calls <code>events(tiles)</code> when drawing tiles, and attaches the same behavior to the geographic reference.</p><pre class="code-example" tabindex="0"><code><span class="syntax-keyword">function</span> events(selection) {
+  selection
+    .attr(<span class="syntax-string">&quot;tabindex&quot;</span>, <span class="syntax-number">0</span>)
+    .attr(<span class="syntax-string">&quot;role&quot;</span>, <span class="syntax-string">&quot;button&quot;</span>)
+    .attr(
+      <span class="syntax-string">&quot;aria-label&quot;</span>,
+      (d) =&gt; `${d.name}: ${d.count} location records. Select to view records.`,
+    )
+    .on(<span class="syntax-string">&quot;click&quot;</span>, (e, d) =&gt; choose(d.name))
+    .on(<span class="syntax-string">&quot;keydown&quot;</span>, (e, d) =&gt; {
+      <span class="syntax-keyword">if</span> (e.key === <span class="syntax-string">&quot;Enter&quot;</span> || e.key === <span class="syntax-string">&quot; &quot;</span>) {
+        e.preventDefault();
+        choose(d.name);
+      }
+    })
+    .on(<span class="syntax-string">&quot;pointerenter&quot;</span>, showInfo)
+    .on(<span class="syntax-string">&quot;pointermove&quot;</span>, positionTooltip)
+    .on(<span class="syntax-string">&quot;pointerleave&quot;</span>, clearHover)
+    .on(<span class="syntax-string">&quot;focus&quot;</span>, showInfo)
+    .on(<span class="syntax-string">&quot;blur&quot;</span>, clearHover);
+}</code></pre></div><p>Save and refresh <code>index.html</code>. Hover over North Beach with filters cleared: the tooltip should show 202 records and approximately 9.8%. Filtering should update the values, and clicking should still select the neighborhood.</p></article></section>
+<footer>
+        <p>
+          Film records: your supplied Film Locations in San Francisco CSV.
+          Geography:
+          <a
+            href="https://data.sf.gov/-/Analysis-Neighborhoods/j2bu-swwd/explore"
+            target="_blank"
+            rel="noopener"
+            >DataSF Analysis Neighborhoods</a
+          >, downloaded 26 October 2026. Reference reading:
+          <a
+            href="https://old.observablehq.com/blog/what-is-a-grid-cartogram"
+            target="_blank"
+            rel="noopener"
+            >Observable — What is a grid cartogram?</a
+          >
+        </p>
+        <p>
+          This page follows the original Walkthrough’s demonstration, data,
+          implementation and practice sequence, updated for the neighborhood
+          project. It includes step-by-step code modifications for the two practice tasks.
+        </p>
+      </footer>
+    </main>
+  </body>
+</html>

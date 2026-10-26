@@ -1,0 +1,564 @@
+{
+  "source": "DataSF Analysis Neighborhoods",
+  "sourceUrl": "https://data.sf.gov/resource/j2bu-swwd.geojson",
+  "retrieved": "2026-10-26",
+  "method": "Mainland cells sampled inside the union of analysis areas. A connected 40-cell silhouette minimizes coastline mismatch across a grid search. Neighborhood representatives are assigned one-to-one to cells by minimum squared displacement using the Hungarian algorithm. This is a geographic approximation, not an exact boundary or adjacency map. Treasure Island is an equal-size detached northeast inset; it is not to scale or at exact distance.",
+  "neighborhoods": [
+    {
+      "name": "Bayview Hunters Point",
+      "col": 7,
+      "row": 4,
+      "lines": [
+        "Bayview",
+        "Hunters Point"
+      ],
+      "anchor": [
+        -122.38601633201706,
+        37.73088925950837
+      ],
+      "island": false
+    },
+    {
+      "name": "Bernal Heights",
+      "col": 5,
+      "row": 4,
+      "lines": [
+        "Bernal",
+        "Heights"
+      ],
+      "anchor": [
+        -122.41566403082737,
+        37.74036373874126
+      ],
+      "island": false
+    },
+    {
+      "name": "Castro/Upper Market",
+      "col": 3,
+      "row": 3,
+      "lines": [
+        "Castro",
+        "Upper Market"
+      ],
+      "anchor": [
+        -122.43521697779386,
+        37.76231895148071
+      ],
+      "island": false
+    },
+    {
+      "name": "Chinatown",
+      "col": 5,
+      "row": 1,
+      "lines": [
+        "Chinatown"
+      ],
+      "anchor": [
+        -122.40708086998997,
+        37.796139825686424
+      ],
+      "island": false
+    },
+    {
+      "name": "Excelsior",
+      "col": 3,
+      "row": 5,
+      "lines": [
+        "Excelsior"
+      ],
+      "anchor": [
+        -122.43180731682781,
+        37.71856246204547
+      ],
+      "island": false
+    },
+    {
+      "name": "Financial District/South Beach",
+      "col": 6,
+      "row": 2,
+      "lines": [
+        "Financial",
+        "District /",
+        "South Beach"
+      ],
+      "anchor": [
+        -122.39705336671304,
+        37.79041820890021
+      ],
+      "island": false
+    },
+    {
+      "name": "Glen Park",
+      "col": 3,
+      "row": 4,
+      "lines": [
+        "Glen Park"
+      ],
+      "anchor": [
+        -122.43632551616764,
+        37.73960455009632
+      ],
+      "island": false
+    },
+    {
+      "name": "Golden Gate Park",
+      "col": 0,
+      "row": 3,
+      "lines": [
+        "Golden Gate",
+        "Park"
+      ],
+      "anchor": [
+        -122.48192216433708,
+        37.769029108086855
+      ],
+      "island": false
+    },
+    {
+      "name": "Haight Ashbury",
+      "col": 2,
+      "row": 3,
+      "lines": [
+        "Haight",
+        "Ashbury"
+      ],
+      "anchor": [
+        -122.44446721062064,
+        37.76837364680459
+      ],
+      "island": false
+    },
+    {
+      "name": "Hayes Valley",
+      "col": 4,
+      "row": 3,
+      "lines": [
+        "Hayes Valley"
+      ],
+      "anchor": [
+        -122.42904372967459,
+        37.7747870096912
+      ],
+      "island": false
+    },
+    {
+      "name": "Inner Richmond",
+      "col": 1,
+      "row": 2,
+      "lines": [
+        "Inner",
+        "Richmond"
+      ],
+      "anchor": [
+        -122.46543392872275,
+        37.78094994867484
+      ],
+      "island": false
+    },
+    {
+      "name": "Inner Sunset",
+      "col": 1,
+      "row": 3,
+      "lines": [
+        "Inner Sunset"
+      ],
+      "anchor": [
+        -122.46473155172504,
+        37.75847303416877
+      ],
+      "island": false
+    },
+    {
+      "name": "Japantown",
+      "col": 3,
+      "row": 1,
+      "lines": [
+        "Japantown"
+      ],
+      "anchor": [
+        -122.43413492161088,
+        37.78509219266484
+      ],
+      "island": false
+    },
+    {
+      "name": "Lakeshore",
+      "col": 0,
+      "row": 5,
+      "lines": [
+        "Lakeshore"
+      ],
+      "anchor": [
+        -122.49035151733617,
+        37.7202091641762
+      ],
+      "island": false
+    },
+    {
+      "name": "Lincoln Park",
+      "col": 0,
+      "row": 1,
+      "lines": [
+        "Lincoln Park"
+      ],
+      "anchor": [
+        -122.50140780665076,
+        37.78448423592845
+      ],
+      "island": false
+    },
+    {
+      "name": "Lone Mountain/USF",
+      "col": 2,
+      "row": 2,
+      "lines": [
+        "Lone",
+        "Mountain",
+        "USF"
+      ],
+      "anchor": [
+        -122.44959957462463,
+        37.777618650047856
+      ],
+      "island": false
+    },
+    {
+      "name": "Marina",
+      "col": 2,
+      "row": 0,
+      "lines": [
+        "Marina"
+      ],
+      "anchor": [
+        -122.43636702119005,
+        37.801442366499174
+      ],
+      "island": false
+    },
+    {
+      "name": "McLaren Park",
+      "col": 4,
+      "row": 5,
+      "lines": [
+        "McLaren Park"
+      ],
+      "anchor": [
+        -122.41869407886219,
+        37.71793749494006
+      ],
+      "island": false
+    },
+    {
+      "name": "Mission",
+      "col": 5,
+      "row": 3,
+      "lines": [
+        "Mission"
+      ],
+      "anchor": [
+        -122.41550390266582,
+        37.76012585025826
+      ],
+      "island": false
+    },
+    {
+      "name": "Mission Bay",
+      "col": 6,
+      "row": 3,
+      "lines": [
+        "Mission Bay"
+      ],
+      "anchor": [
+        -122.39356368576918,
+        37.77165828837044
+      ],
+      "island": false
+    },
+    {
+      "name": "Nob Hill",
+      "col": 4,
+      "row": 1,
+      "lines": [
+        "Nob Hill"
+      ],
+      "anchor": [
+        -122.41495071217258,
+        37.79180344329799
+      ],
+      "island": false
+    },
+    {
+      "name": "Noe Valley",
+      "col": 4,
+      "row": 4,
+      "lines": [
+        "Noe Valley"
+      ],
+      "anchor": [
+        -122.43332385528048,
+        37.74891774378637
+      ],
+      "island": false
+    },
+    {
+      "name": "North Beach",
+      "col": 5,
+      "row": 0,
+      "lines": [
+        "North Beach"
+      ],
+      "anchor": [
+        -122.40964083801026,
+        37.804644916506966
+      ],
+      "island": false
+    },
+    {
+      "name": "Oceanview/Merced/Ingleside",
+      "col": 1,
+      "row": 5,
+      "lines": [
+        "Oceanview",
+        "Merced",
+        "Ingleside"
+      ],
+      "anchor": [
+        -122.4609145221596,
+        37.71699787988721
+      ],
+      "island": false
+    },
+    {
+      "name": "Outer Mission",
+      "col": 2,
+      "row": 5,
+      "lines": [
+        "Outer Mission"
+      ],
+      "anchor": [
+        -122.44392059105246,
+        37.72064856361234
+      ],
+      "island": false
+    },
+    {
+      "name": "Outer Richmond",
+      "col": 0,
+      "row": 2,
+      "lines": [
+        "Outer",
+        "Richmond"
+      ],
+      "anchor": [
+        -122.49182341438942,
+        37.77806484513825
+      ],
+      "island": false
+    },
+    {
+      "name": "Pacific Heights",
+      "col": 3,
+      "row": 0,
+      "lines": [
+        "Pacific",
+        "Heights"
+      ],
+      "anchor": [
+        -122.43482674687193,
+        37.79101944411228
+      ],
+      "island": false
+    },
+    {
+      "name": "Portola",
+      "col": 6,
+      "row": 5,
+      "lines": [
+        "Portola"
+      ],
+      "anchor": [
+        -122.40899337771219,
+        37.7267923279313
+      ],
+      "island": false
+    },
+    {
+      "name": "Potrero Hill",
+      "col": 6,
+      "row": 4,
+      "lines": [
+        "Potrero",
+        "Hill"
+      ],
+      "anchor": [
+        -122.39360197918444,
+        37.75887233168234
+      ],
+      "island": false
+    },
+    {
+      "name": "Presidio",
+      "col": 1,
+      "row": 0,
+      "lines": [
+        "Presidio"
+      ],
+      "anchor": [
+        -122.46636996458369,
+        37.797376506559274
+      ],
+      "island": false
+    },
+    {
+      "name": "Presidio Heights",
+      "col": 2,
+      "row": 1,
+      "lines": [
+        "Presidio",
+        "Heights"
+      ],
+      "anchor": [
+        -122.45165833110437,
+        37.78631314778374
+      ],
+      "island": false
+    },
+    {
+      "name": "Russian Hill",
+      "col": 4,
+      "row": 0,
+      "lines": [
+        "Russian Hill"
+      ],
+      "anchor": [
+        -122.41981147746476,
+        37.80043776836094
+      ],
+      "island": false
+    },
+    {
+      "name": "Seacliff",
+      "col": 1,
+      "row": 1,
+      "lines": [
+        "Seacliff"
+      ],
+      "anchor": [
+        -122.48686805360175,
+        37.786684905187336
+      ],
+      "island": false
+    },
+    {
+      "name": "South of Market",
+      "col": 5,
+      "row": 2,
+      "lines": [
+        "South of",
+        "Market"
+      ],
+      "anchor": [
+        -122.40592805793175,
+        37.777249241467835
+      ],
+      "island": false
+    },
+    {
+      "name": "Sunset/Parkside",
+      "col": 0,
+      "row": 4,
+      "lines": [
+        "Sunset",
+        "Parkside"
+      ],
+      "anchor": [
+        -122.49255000123756,
+        37.74838471015963
+      ],
+      "island": false
+    },
+    {
+      "name": "Tenderloin",
+      "col": 4,
+      "row": 2,
+      "lines": [
+        "Tenderloin"
+      ],
+      "anchor": [
+        -122.41526272440846,
+        37.783156988482595
+      ],
+      "island": false
+    },
+    {
+      "name": "Treasure Island",
+      "col": 7,
+      "row": 0,
+      "lines": [
+        "Treasure",
+        "Island"
+      ],
+      "anchor": [
+        -122.36953980997326,
+        37.82065548122554
+      ],
+      "island": true
+    },
+    {
+      "name": "Twin Peaks",
+      "col": 2,
+      "row": 4,
+      "lines": [
+        "Twin Peaks"
+      ],
+      "anchor": [
+        -122.44979709350015,
+        37.752113008469
+      ],
+      "island": false
+    },
+    {
+      "name": "Visitacion Valley",
+      "col": 5,
+      "row": 5,
+      "lines": [
+        "Visitacion",
+        "Valley"
+      ],
+      "anchor": [
+        -122.4101044552883,
+        37.712867337684315
+      ],
+      "island": false
+    },
+    {
+      "name": "West of Twin Peaks",
+      "col": 1,
+      "row": 4,
+      "lines": [
+        "West of",
+        "Twin Peaks"
+      ],
+      "anchor": [
+        -122.45993723048478,
+        37.735181418386354
+      ],
+      "island": false
+    },
+    {
+      "name": "Western Addition",
+      "col": 3,
+      "row": 2,
+      "lines": [
+        "Western",
+        "Addition"
+      ],
+      "anchor": [
+        -122.43063021472632,
+        37.78183144939787
+      ],
+      "island": false
+    }
+  ],
+  "mainlandSilhouetteMismatch": 0.13206203626592078
+}
