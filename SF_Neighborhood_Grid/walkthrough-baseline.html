@@ -1,0 +1,211 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>SF / On Location</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="vendor/d3.min.js" defer></script>
+    <script src="cartogram.js" defer></script>
+    <style>
+      header,
+      .intro,
+      .walkthrough-link,
+      footer {
+        display: none;
+      }
+      main {
+        padding: 14px 18px;
+      }
+      .controls {
+        padding: 10px 0;
+      }
+      .stats {
+        padding: 4px 0 12px;
+        gap: 28px;
+      }
+      .stats strong {
+        font-size: 25px;
+      }
+      .map-panel {
+        padding: 16px;
+      }
+      .grid-reference {
+        grid-template-columns: 1fr !important;
+        margin: 16px 0;
+      }
+      .geo-view {
+        border-left: 0;
+        padding-left: 0;
+        border-top: 1px solid var(--line);
+        padding-top: 18px;
+      }
+      .geo-view #reference {
+        max-width: 390px;
+        max-height: 420px;
+        margin: auto;
+      }
+      .grid-scroll #chart {
+        min-width: 620px;
+        max-width: 800px;
+        margin: auto;
+      }
+      .archive {
+        margin-top: 22px;
+      }
+    </style>
+    <style>
+      #tooltip {
+        display: none !important;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <header>
+        <a class="brand" href="./index.html">SF <span>/</span> ON LOCATION</a
+        ><span class="edition">A CINEMATIC ATLAS · 01</span>
+      </header>
+      <nav class="walkthrough-link">
+        <a href="Walkthrough.html">Read the neighborhood walkthrough ↗</a>
+      </nav>
+      <section class="intro">
+        <div>
+          <p class="eyebrow">THE CITY, THROUGH THE CAMERA</p>
+          <h1>Every neighborhood.<br />A different story.</h1>
+          <p class="deck">
+            Explore the geography of film and television in San Francisco.<br />Equal
+            neighborhood tiles. A more recognizable city.
+          </p>
+        </div>
+        <div class="intro-note">
+          <span class="big-arrow">↙</span>
+          <p>
+            Filter the archive.<br />Choose a neighborhood.<br />Discover what
+            was filmed there.
+          </p>
+        </div>
+      </section>
+      <section class="controls" aria-label="Archive filters">
+        <label
+          >RELEASE YEAR<select id="year" disabled>
+            <option value="all">All years</option>
+          </select></label
+        ><label class="search-label"
+          >SEARCH THE ARCHIVE<input
+            id="search"
+            type="search"
+            placeholder="Film title or location…"
+            disabled /></label
+        ><button id="reset" disabled>Reset filters ↺</button>
+      </section>
+      <p id="status" role="status">Loading the local archive…</p>
+      <section class="stats">
+        <div><strong id="records">—</strong><span>MAPPED RECORDS</span></div>
+        <div>
+          <strong id="productions">—</strong><span>FILM & TV TITLES</span>
+        </div>
+        <div>
+          <strong id="active">—</strong><span>NEIGHBORHOODS WITH RECORDS</span>
+        </div>
+        <p id="excluded"></p>
+      </section>
+      <div class="visuals">
+        <section class="map-panel">
+          <div class="section-heading">
+            <div>
+              <p class="eyebrow">01 / SPATIAL VIEW</p>
+              <h2>The neighborhood grid</h2>
+            </div>
+            <span class="tag">CLICK A TILE TO EXPLORE</span>
+          </div>
+          <div class="grid-reference">
+            <div class="grid-view">
+              <h3 class="view-title">Grid cartogram</h3>
+              <p class="view-hint">
+                One equal square per analysis neighborhood · North ↑
+              </p>
+              <div class="grid-scroll">
+                <svg id="chart" aria-label="Neighborhood grid cartogram"></svg>
+              </div>
+            </div>
+            <div class="geo-view">
+              <h3 class="view-title">Geographic reference</h3>
+              <p class="view-hint">
+                Same neighborhoods, actual analysis-area shapes.
+              </p>
+              <svg
+                id="reference"
+                viewBox="0 0 460 530"
+                aria-label="San Francisco analysis neighborhood reference map"
+              ></svg>
+              <p id="reference-caption" class="view-hint">
+                Hover or select either view to locate a neighborhood.
+              </p>
+            </div>
+          </div>
+          <div class="selection-summary" id="selection-summary">
+            <span id="selection-text"
+              >Select a neighborhood to explore its films and locations.</span
+            ><button id="view-records" type="button" hidden>
+              View records ↓
+            </button>
+          </div>
+          <div id="legend"></div>
+          <p class="note">
+            Color shows location-record counts on the same fixed square-root
+            scale across filters. Gray = no matching records. Positions
+            approximate geography; tile area does not represent land area or
+            count. Treasure Island is a detached inset, not at its true
+            distance. On narrow screens, scroll the grid sideways.
+          </p>
+          <details class="map-method">
+            <summary>How this neighborhood layout was made</summary>
+            <p>
+              The CSV is grouped by <strong>Analysis Neighborhood</strong>, not
+              Supervisor District. DataSF supplies 41 analysis areas; 40 have
+              records in this CSV, while Visitacion Valley has none and stays
+              visible in gray. The mainland grid follows a sampled city
+              silhouette; areas are matched to cells by minimizing displacement
+              from geographic representative points. True borders and every
+              adjacency are not preserved. These analysis areas aggregate census
+              tracts and are not legally defined neighborhood boundaries.
+            </p>
+            <p>
+              <a
+                href="https://data.sf.gov/-/Analysis-Neighborhoods/j2bu-swwd/explore"
+                target="_blank"
+                rel="noopener"
+                >Boundary source: DataSF Analysis Neighborhoods</a
+              >
+            </p>
+          </details>
+        </section>
+      </div>
+      <section class="archive" id="archive" tabindex="-1">
+        <div class="section-heading">
+          <div>
+            <p class="eyebrow">02 / THE ARCHIVE</p>
+            <h2 id="detail-title">All neighborhoods</h2>
+            <p id="detail-description"></p>
+          </div>
+          <button id="clear" hidden>Clear neighborhood ×</button>
+        </div>
+        <div id="film-list"></div>
+        <button id="more" hidden>Load more records ↓</button>
+      </section>
+      <footer>
+        <p>
+          Source: Film Locations in San Francisco · CSV snapshot supplied by
+          you.
+        </p>
+        <p>
+          One row = one location record. Titles are deduplicated by title +
+          release year.<br />Records without a matching neighborhood are
+          excluded from the views. Years refer to release, not filming.
+        </p>
+      </footer>
+    </main>
+    <div id="tooltip" hidden></div>
+  </body>
+</html>
